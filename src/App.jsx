@@ -6,6 +6,7 @@ import Announcement from './pages/Announcement'
 import Profile from './pages/Profile'
 import Members from './pages/Members'
 import MemberDetail from './pages/MemberDetail'
+import Report from './pages/Report'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -61,6 +62,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="calendar" element={<Calendar />} />
         <Route path="announcement" element={<Announcement />} />
+        <Route path="report" element={<Report />} />
         <Route path="profile" element={<Profile />} />
         <Route path="members" element={<Members />} />
         <Route path="members/:id" element={<MemberDetail />} />

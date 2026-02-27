@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 function Login() {
@@ -40,8 +40,12 @@ function Login() {
       <div className="relative w-full max-w-md">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4 shadow-lg">
-            <span className="text-3xl font-bold text-red-600">K</span>
+          <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-full shadow-lg flex items-center justify-center">
+            <img
+              src="/image-removebg-preview.png"
+              alt="KUSGAN logo"
+              className="w-16 h-16 object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold text-white">KUSGAN Volunteer</h1>
           <p className="text-gray-400 mt-2">Community Service under Cares Department</p>
@@ -49,8 +53,7 @@ function Login() {
 
         {/* Login Form */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-            <LogIn className="text-red-500" />
+          <h2 className="text-2xl font-semibold text-white mb-6">
             Welcome Back
           </h2>
 
@@ -130,14 +133,6 @@ function Login() {
             </p>
           </div>
 
-          {/* Demo Accounts Info */}
-          <div className="mt-6 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
-            <p className="text-gray-400 text-xs mb-2">Demo Accounts:</p>
-            <div className="space-y-1 text-xs text-gray-500">
-              <p>Admin: admin@kusgan.com / admin123</p>
-              <p>Member: john@kusgan.com / john123</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

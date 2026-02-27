@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Mail, Calendar, Shield, Bell, CalendarDays, Save, User, Check, X } from 'lucide-react'
+import { ArrowLeft, Mail, Calendar, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useParams } from 'react-router-dom'
-import dayjs from 'dayjs'
 
 function MemberDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user, getAllMembers, users, setUsers, updateMemberPermission } = useAuth()
+  const { getAllMembers } = useAuth()
   
   const [member, setMember] = useState(null)
   const [loading, setLoading] = useState(true)
+<<<<<<< HEAD
   const [hasChanges, setHasChanges] = useState(false)
   const [tempPermissions, setTempPermissions] = useState({
     canCreateAnnouncement: false,
@@ -19,21 +19,27 @@ function MemberDetail() {
   })
 
   const isAdmin = user?.role === 'admin'
+=======
+>>>>>>> 87a1face433de87f5546fee631b01a9c62081437
 
   useEffect(() => {
     const allMembers = getAllMembers()
     const foundMember = allMembers.find(m => m.id === parseInt(id))
     if (foundMember) {
       setMember(foundMember)
+<<<<<<< HEAD
       setTempPermissions({
         canCreateAnnouncement: foundMember.canCreateAnnouncement || false,
         canCreatePlan: foundMember.canCreatePlan || false,
         canViewAllAnnouncements: foundMember.canViewAllAnnouncements || false
       })
+=======
+>>>>>>> 87a1face433de87f5546fee631b01a9c62081437
     }
     setLoading(false)
   }, [id, getAllMembers])
 
+<<<<<<< HEAD
   const handlePermissionChange = (permission) => {
     setTempPermissions({
       ...tempPermissions,
@@ -55,6 +61,8 @@ function MemberDetail() {
     }
   }
 
+=======
+>>>>>>> 87a1face433de87f5546fee631b01a9c62081437
   const getRoleBadge = (role) => {
     return role === 'admin' 
       ? 'bg-red-100 text-red-700 border-red-200'
@@ -99,43 +107,35 @@ function MemberDetail() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Member Info Card */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-start gap-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-3xl">
-                  {member.name.charAt(0).toUpperCase()}
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex items-start gap-6">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-3xl">
+                {member.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <h2 className="text-2xl font-bold text-gray-800">{member.name}</h2>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getRoleBadge(member.role)}`}>
+                  {member.role === 'admin' ? 'Administrator' : 'Member'}
                 </span>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-gray-800">{member.name}</h2>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getRoleBadge(member.role)}`}>
-                    {member.role === 'admin' ? 'Administrator' : 'Member'}
-                  </span>
+              
+              <div className="space-y-3 mt-4">
+                <div className="flex items-center gap-3 text-gray-600">
+                  <Mail size={18} className="text-gray-400" />
+                  <span>{member.email}</span>
                 </div>
-                
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <Mail size={18} className="text-gray-400" />
-                    <span>{member.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <Calendar size={18} className="text-gray-400" />
-                    <span>Joined {new Date().toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                {/* Member ID */}
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-sm text-gray-500">Member ID: </span>
-                  <span className="text-sm font-medium text-gray-700">{member.id}</span>
+                <div className="flex items-center gap-3 text-gray-600">
+                  <Calendar size={18} className="text-gray-400" />
+                  <span>Joined {new Date().toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
           </div>
+<<<<<<< HEAD
 
           {/* Permissions Card - Only visible to admin */}
           {isAdmin && member.role !== 'admin' && (
@@ -265,31 +265,31 @@ function MemberDetail() {
               </div>
             </div>
           ) : null}
+=======
+>>>>>>> 87a1face433de87f5546fee631b01a9c62081437
         </div>
 
-        {/* Sidebar Stats */}
-        <div>
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Account Info</h3>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Role</p>
-                <p className="font-medium text-gray-800">
-                  {member.role === 'admin' ? 'Administrator' : 'Member'}
-                </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Status</p>
-                <p className="font-medium text-green-600 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Active
-                </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Member Since</p>
-                <p className="font-medium text-gray-800">{new Date().toLocaleDateString()}</p>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Member ID</p>
+            <p className="text-lg font-semibold text-gray-800">{member.id}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Role</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {member.role === 'admin' ? 'Administrator' : 'Member'}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Status</p>
+            <p className="text-lg font-semibold text-green-600 flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              Active
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Member Since</p>
+            <p className="text-lg font-semibold text-gray-800">{new Date().toLocaleDateString()}</p>
           </div>
         </div>
       </div>
