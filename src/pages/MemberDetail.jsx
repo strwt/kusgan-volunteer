@@ -1,56 +1,24 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Mail, Calendar, Shield, Bell, CalendarDays, Save, User, Check, X } from 'lucide-react'
+import { ArrowLeft, Mail, Calendar, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useParams } from 'react-router-dom'
-import dayjs from 'dayjs'
 
 function MemberDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user, getAllMembers, users, setUsers, updateMemberPermission } = useAuth()
+  const { getAllMembers } = useAuth()
   
   const [member, setMember] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [hasChanges, setHasChanges] = useState(false)
-  const [tempPermissions, setTempPermissions] = useState({
-    canCreateAnnouncement: false,
-    canCreatePlan: false
-  })
-
-  const isAdmin = user?.role === 'admin'
 
   useEffect(() => {
     const allMembers = getAllMembers()
     const foundMember = allMembers.find(m => m.id === parseInt(id))
     if (foundMember) {
       setMember(foundMember)
-      setTempPermissions({
-        canCreateAnnouncement: foundMember.canCreateAnnouncement || false,
-        canCreatePlan: foundMember.canCreatePlan || false
-      })
     }
     setLoading(false)
   }, [id, getAllMembers])
-
-  const handlePermissionChange = (permission) => {
-    setTempPermissions({
-      ...tempPermissions,
-      [permission]: !tempPermissions[permission]
-    })
-    setHasChanges(true)
-  }
-
-  const handleSavePermissions = () => {
-    updateMemberPermission(parseInt(id), 'canCreateAnnouncement', tempPermissions.canCreateAnnouncement)
-    updateMemberPermission(parseInt(id), 'canCreatePlan', tempPermissions.canCreatePlan)
-    setHasChanges(false)
-    // Refresh member data
-    const allMembers = getAllMembers()
-    const foundMember = allMembers.find(m => m.id === parseInt(id))
-    if (foundMember) {
-      setMember(foundMember)
-    }
-  }
 
   const getRoleBadge = (role) => {
     return role === 'admin' 
@@ -96,166 +64,57 @@ function MemberDetail() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Member Info Card */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-start gap-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-3xl">
-                  {member.name.charAt(0).toUpperCase()}
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex items-start gap-6">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-3xl">
+                {member.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <h2 className="text-2xl font-bold text-gray-800">{member.name}</h2>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getRoleBadge(member.role)}`}>
+                  {member.role === 'admin' ? 'Administrator' : 'Member'}
                 </span>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-gray-800">{member.name}</h2>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getRoleBadge(member.role)}`}>
-                    {member.role === 'admin' ? 'Administrator' : 'Member'}
-                  </span>
+              
+              <div className="space-y-3 mt-4">
+                <div className="flex items-center gap-3 text-gray-600">
+                  <Mail size={18} className="text-gray-400" />
+                  <span>{member.email}</span>
                 </div>
-                
-                <div className="space-y-3 mt-4">
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <Mail size={18} className="text-gray-400" />
-                    <span>{member.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-600">
-                    <Calendar size={18} className="text-gray-400" />
-                    <span>Joined {new Date().toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                {/* Member ID */}
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <span className="text-sm text-gray-500">Member ID: </span>
-                  <span className="text-sm font-medium text-gray-700">{member.id}</span>
+                <div className="flex items-center gap-3 text-gray-600">
+                  <Calendar size={18} className="text-gray-400" />
+                  <span>Joined {new Date().toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Permissions Card - Only visible to admin */}
-          {isAdmin && member.role !== 'admin' && (
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield size={20} className="text-gray-600" />
-                <h3 className="text-lg font-semibold text-gray-800">Permissions</h3>
-              </div>
-              
-              <div className="space-y-4">
-                {/* Can Create Announcements */}
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Bell size={20} className="text-gray-400" />
-                    <div>
-                      <p className="font-medium text-gray-800">Create Announcements</p>
-                      <p className="text-sm text-gray-500">Allow this member to create announcements</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handlePermissionChange('canCreateAnnouncement')}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${
-                      tempPermissions.canCreateAnnouncement ? 'bg-red-600' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      tempPermissions.canCreateAnnouncement ? 'translate-x-7' : 'translate-x-1'
-                    }`} />
-                  </button>
-                </div>
-
-                {/* Can Create Plans */}
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <CalendarDays size={20} className="text-gray-400" />
-                    <div>
-                      <p className="font-medium text-gray-800">Create Plans</p>
-                      <p className="text-sm text-gray-500">Allow this member to create calendar plans</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handlePermissionChange('canCreatePlan')}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${
-                      tempPermissions.canCreatePlan ? 'bg-red-600' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      tempPermissions.canCreatePlan ? 'translate-x-7' : 'translate-x-1'
-                    }`} />
-                  </button>
-                </div>
-
-                {/* Save Button */}
-                {hasChanges && (
-                  <button
-                    onClick={handleSavePermissions}
-                    className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all"
-                  >
-                    <Save size={18} />
-                    Save Changes
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Current Permissions Display (for non-admin or viewing own profile) */}
-          {!isAdmin || member.role === 'admin' ? (
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield size={20} className="text-gray-600" />
-                <h3 className="text-lg font-semibold text-gray-800">Your Permissions</h3>
-              </div>
-              
-              <div className="space-y-3">
-                <div className={`flex items-center gap-3 p-3 rounded-lg ${member.canCreateAnnouncement ? 'bg-green-50' : 'bg-gray-50'}`}>
-                  {member.canCreateAnnouncement ? (
-                    <Check size={18} className="text-green-600" />
-                  ) : (
-                    <X size={18} className="text-gray-400" />
-                  )}
-                  <span className={member.canCreateAnnouncement ? 'text-green-700' : 'text-gray-500'}>
-                    Can Create Announcements
-                  </span>
-                </div>
-                <div className={`flex items-center gap-3 p-3 rounded-lg ${member.canCreatePlan ? 'bg-green-50' : 'bg-gray-50'}`}>
-                  {member.canCreatePlan ? (
-                    <Check size={18} className="text-green-600" />
-                  ) : (
-                    <X size={18} className="text-gray-400" />
-                  )}
-                  <span className={member.canCreatePlan ? 'text-green-700' : 'text-gray-500'}>
-                    Can Create Plans
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : null}
         </div>
 
-        {/* Sidebar Stats */}
-        <div>
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Account Info</h3>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Role</p>
-                <p className="font-medium text-gray-800">
-                  {member.role === 'admin' ? 'Administrator' : 'Member'}
-                </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Status</p>
-                <p className="font-medium text-green-600 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Active
-                </p>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-500 mb-1">Member Since</p>
-                <p className="font-medium text-gray-800">{new Date().toLocaleDateString()}</p>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Member ID</p>
+            <p className="text-lg font-semibold text-gray-800">{member.id}</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Role</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {member.role === 'admin' ? 'Administrator' : 'Member'}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Status</p>
+            <p className="text-lg font-semibold text-green-600 flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              Active
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-5">
+            <p className="text-sm text-gray-500 mb-1">Member Since</p>
+            <p className="text-lg font-semibold text-gray-800">{new Date().toLocaleDateString()}</p>
           </div>
         </div>
       </div>

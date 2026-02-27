@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import { User, Mail, Shield, Bell, Calendar, LogOut, Edit2, Save, X, Check } from 'lucide-react'
+import { User, Mail, Shield, Edit2, Save, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
 
 function Profile() {
-  const { user, logout, updateMemberPermission } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({
     name: user?.name || '',
@@ -16,26 +14,6 @@ function Profile() {
     // In a real app, this would update the user in localStorage
     setIsEditing(false)
   }
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
-
-  const permissions = [
-    { 
-      key: 'canCreateAnnouncement', 
-      label: 'Create Announcements', 
-      description: 'Ability to post new announcements',
-      icon: Bell
-    },
-    { 
-      key: 'canCreatePlan', 
-      label: 'Create Plans', 
-      description: 'Ability to create calendar events and plans',
-      icon: Calendar
-    },
-  ]
 
   return (
     <div className="animate-fade-in">
@@ -132,43 +110,6 @@ function Profile() {
         </div>
       </div>
 
-      {/* Permissions Section */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <Shield size={20} className="text-red-600" />
-          Your Permissions
-        </h3>
-        <div className="space-y-3">
-          {permissions.map((permission) => (
-            <div 
-              key={permission.key}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  user?.[permission.key] || user?.role === 'admin'
-                    ? 'bg-green-100 text-green-600'
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
-                  <permission.icon size={20} />
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800">{permission.label}</p>
-                  <p className="text-sm text-gray-500">{permission.description}</p>
-                </div>
-              </div>
-              <div className={`w-12 h-6 rounded-full flex items-center justify-center ${
-                user?.[permission.key] || user?.role === 'admin'
-                  ? 'bg-green-500'
-                  : 'bg-gray-300'
-              }`}>
-                <Check size={14} className="text-white" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Account Info */}
       <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -194,14 +135,6 @@ function Profile() {
         </div>
       </div>
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors"
-      >
-        <LogOut size={18} />
-        Sign Out
-      </button>
     </div>
   )
 }
