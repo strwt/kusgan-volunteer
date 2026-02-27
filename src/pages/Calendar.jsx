@@ -799,7 +799,7 @@ function Calendar() {
             </form>
 =======
             {selectedMonth.items.length === 0 && (
-              <p className="text-gray-500 text-center py-4">No events in this month.</p>
+              <p className="text-gray-500 text-center py-4">No events in this Month.</p>
             )}
 >>>>>>> 87a1face433de87f5546fee631b01a9c62081437
           </div>
