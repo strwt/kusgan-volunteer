@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Calendar, Bell, User, LogOut, ChevronLeft, ChevronRight, Users, Plus, X } from 'lucide-react'
+import { LayoutDashboard, Calendar, User, LogOut, ChevronLeft, ChevronRight, Users, FileText, Plus, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 function Sidebar({ isOpen, toggleSidebar }) {
@@ -17,7 +17,7 @@ function Sidebar({ isOpen, toggleSidebar }) {
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/calendar', icon: Calendar, label: 'Calendar' },
-    { to: '/announcement', icon: Bell, label: 'Announcements' },
+    { to: '/report', icon: FileText, label: 'Report' },
     { to: '/profile', icon: User, label: 'Profile' },
   ]
 
@@ -49,8 +49,12 @@ function Sidebar({ isOpen, toggleSidebar }) {
           {isOpen ? (
             <div className="animate-fade-in">
               <div className="flex items-center gap-3 mb-1">
-                <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">K</span>
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                  <img
+                    src="/image-removebg-preview.png"
+                    alt="KUSGAN logo"
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
                 <div>
                   <h1 className="text-lg font-bold text-white">KUSGAN</h1>
@@ -60,8 +64,12 @@ function Sidebar({ isOpen, toggleSidebar }) {
               <p className="text-xs text-gray-500 mt-1">Cares Department</p>
             </div>
           ) : (
-            <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white font-bold text-lg">K</span>
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto overflow-hidden">
+              <img
+                src="/image-removebg-preview.png"
+                alt="KUSGAN logo"
+                className="w-8 h-8 object-contain"
+              />
             </div>
           )}
         </div>

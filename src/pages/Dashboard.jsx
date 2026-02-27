@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Activity, AlertTriangle, Calendar, Bell, Users, TrendingUp, Leaf, Droplets, Wind, Flame, FileText } from 'lucide-react'
+import { Activity, AlertTriangle, Bell, TrendingUp, Leaf, Droplets, Wind, Flame, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -71,12 +71,6 @@ function Dashboard() {
     },
   ]
 
-  const quickActions = [
-    { icon: Calendar, label: 'View Calendar', path: '/calendar', color: 'from-red-600 to-red-700' },
-    { icon: Bell, label: 'Announcements', path: '/announcement', color: 'from-gray-800 to-gray-900' },
-    { icon: Users, label: 'Members', path: '/members', color: 'from-red-500 to-red-600' },
-  ]
-
   return (
     <div className="animate-fade-in">
       {/* Welcome Section */}
@@ -105,23 +99,6 @@ function Dashboard() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {quickActions.map((action, index) => (
-          <button
-            key={action.label}
-            onClick={() => navigate(action.path)}
-            className={`bg-gradient-to-r ${action.color} text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-4 group`}
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
-              <action.icon size={24} />
-            </div>
-            <span className="font-semibold">{action.label}</span>
-          </button>
-        ))}
       </div>
 
       {/* Category Stats Grid */}
