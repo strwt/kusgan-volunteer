@@ -32,12 +32,16 @@ function Calendar() {
     type: 'plan',
     startTime: '',
     endTime: '',
+    priority: 'medium',
+    category: 'environmental',
+    visibility: 'public',
   })
   const [editForm, setEditForm] = useState({
     title: '',
     content: '',
     priority: 'medium',
     category: 'environmental',
+    visibility: 'public',
   })
 
   useEffect(() => {
@@ -50,6 +54,7 @@ function Calendar() {
 
   const canCreatePlan = user?.canCreatePlan || user?.role === 'admin'
   const canCreateAnnouncement = user?.canCreateAnnouncement || user?.role === 'admin'
+  const canViewAllAnnouncements = user?.canViewAllAnnouncements || user?.role === 'admin'
   const isAdmin = user?.role === 'admin'
 
   const daysInMonth = currentDate.daysInMonth()
@@ -71,7 +76,7 @@ function Calendar() {
     const dateStr = currentDate.date(day).format('YYYY-MM-DD')
     const dayEvents = events.filter(e => e.date === dateStr)
     const dayAnnouncements = announcements.filter(a => {
-      return a.date === dateStr && (a.visibility === 'public' || a.authorId === user?.id || user?.role === 'admin')
+      return a.date === dateStr && (a.visibility === 'public' || a.authorId === user?.id || user?.role === 'admin' || canViewAllAnnouncements)
     })
     return { plans: dayEvents, announcements: dayAnnouncements }
   }
@@ -94,6 +99,9 @@ function Calendar() {
         type: 'plan',
         startTime: '',
         endTime: '',
+        priority: 'medium',
+        category: 'environmental',
+        visibility: 'public',
       })
     }
   }
@@ -118,6 +126,9 @@ function Calendar() {
       type: 'plan',
       startTime: '',
       endTime: '',
+      priority: 'medium',
+      category: 'environmental',
+      visibility: 'public',
     })
   }
 
@@ -142,6 +153,7 @@ function Calendar() {
       content: announcement.content,
       priority: announcement.priority || 'medium',
       category: announcement.category || 'environmental',
+      visibility: announcement.visibility || 'public',
     })
     setShowEditModal(true)
     setShowDetailModal(false)
@@ -160,6 +172,7 @@ function Calendar() {
           content: editForm.content,
           priority: editForm.priority,
           category: editForm.category,
+          visibility: editForm.visibility,
           updatedAt: dayjs().format('YYYY-MM-DD HH:mm'),
         }
       }
@@ -175,6 +188,7 @@ function Calendar() {
       content: '',
       priority: 'medium',
       category: 'environmental',
+      visibility: 'public',
     })
     
     // Refresh selected item with updated data
@@ -413,27 +427,117 @@ function Calendar() {
                 />
               </div>
 
-              {/* Time */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                  <input
-                    type="time"
-                    value={eventForm.startTime}
-                    onChange={(e) => setEventForm({ ...eventForm, startTime: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
+              {/* Time - Only show for plans */}
+              {eventForm.type === 'plan' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                    <input
+                      type="time"
+                      value={eventForm.startTime}
+                      onChange={(e) => setEventForm({ ...eventForm, startTime: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                    <input
+                      type="time"
+                      value={eventForm.endTime}
+                      onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
+              )}
+
+              {/* Priority - Only show for announcements */}
+              {eventForm.type === 'announcement' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                  <input
-                    type="time"
-                    value={eventForm.endTime}
-                    onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                  <div className="flex gap-2">
+                    {['high', 'medium', 'low'].map(p => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setEventForm({ ...eventForm, priority: p })}
+                        className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium capitalize transition-all ${
+                          eventForm.priority === p
+                            ? p === 'high' ? 'bg-red-600 text-white'
+                              : p === 'medium' ? 'bg-yellow-500 text-white'
+                              : 'bg-green-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Category - Only show for announcements */}
+              {eventForm.type === 'announcement' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {['environmental', 'relief operation', 'fire response', 'notes'].map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setEventForm({ ...eventForm, category: c })}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+                          eventForm.category === c
+                            ? 'bg-gray-900 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {getCategoryIcon(c)} {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Visibility - Only show for announcements, and only for admin */}
+              {eventForm.type === 'announcement' && isAdmin && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEventForm({ ...eventForm, visibility: 'public' })}
+                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        eventForm.visibility === 'public'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      🌍 Anyone can see
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEventForm({ ...eventForm, visibility: 'private' })}
+                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        eventForm.visibility === 'private'
+                          ? 'bg-gray-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      🔒 Only me
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Note for members when creating announcement */}
+              {eventForm.type === 'announcement' && !isAdmin && (
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                    ℹ️ Your announcement will be submitted for admin approval. The admin will set the visibility.
+                  </p>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button
@@ -539,6 +643,11 @@ function Calendar() {
                             }`}>
                               {getCategoryIcon(announcement.category)} {announcement.category}
                             </span>
+                            {announcement.visibility === 'private' && (
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                🔒 Private
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
                             <User size={14} />
@@ -669,6 +778,37 @@ function Calendar() {
                   ))}
                 </div>
               </div>
+
+              {/* Visibility - Only show for admin */}
+              {isAdmin && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, visibility: 'public' })}
+                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        editForm.visibility === 'public'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      🌍 Anyone can see
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, visibility: 'private' })}
+                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        editForm.visibility === 'private'
+                          ? 'bg-gray-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      🔒 Only me
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button

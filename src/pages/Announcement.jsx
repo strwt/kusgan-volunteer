@@ -40,6 +40,7 @@ function Announcement() {
   })
 
   const canCreateAnnouncement = user?.canCreateAnnouncement || user?.role === 'admin'
+  const canViewAllAnnouncements = user?.canViewAllAnnouncements || user?.role === 'admin'
   const isAdmin = user?.role === 'admin'
 
   useEffect(() => {
@@ -51,8 +52,8 @@ function Announcement() {
                          a.content.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesPriority = filterPriority === 'all' || a.priority === filterPriority
     const matchesCategory = filterCategory === 'all' || a.category === filterCategory
-    // Check visibility - show if public OR if user is the author
-    const isVisible = a.visibility === 'public' || a.authorId === user?.id || user?.role === 'admin'
+    // Check visibility - show if public OR if user is the author OR has canViewAllAnnouncements permission
+    const isVisible = a.visibility === 'public' || a.authorId === user?.id || user?.role === 'admin' || canViewAllAnnouncements
     return matchesSearch && matchesPriority && matchesCategory && isVisible
   })
 
@@ -235,34 +236,46 @@ function Announcement() {
               </div>
             </div>
 
-            {/* Visibility */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, visibility: 'public' })}
-                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    formData.visibility === 'public'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  🌍 Anyone can see
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, visibility: 'private' })}
-                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    formData.visibility === 'private'
-                      ? 'bg-gray-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  🔒 Only me
-                </button>
+            {/* Visibility - Only show for admin */}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, visibility: 'public' })}
+                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      formData.visibility === 'public'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    🌍 Anyone can see
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, visibility: 'private' })}
+                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      formData.visibility === 'private'
+                        ? 'bg-gray-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    🔒 Only me
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Note for members when creating announcement */}
+            {!isAdmin && (
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  ℹ️ Your announcement will be submitted for admin approval. The admin will set the visibility.
+                </p>
+              </div>
+            )}
+
             <div className="flex gap-3">
               <button 
                 type="submit" 

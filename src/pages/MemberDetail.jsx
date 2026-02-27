@@ -14,7 +14,8 @@ function MemberDetail() {
   const [hasChanges, setHasChanges] = useState(false)
   const [tempPermissions, setTempPermissions] = useState({
     canCreateAnnouncement: false,
-    canCreatePlan: false
+    canCreatePlan: false,
+    canViewAllAnnouncements: false
   })
 
   const isAdmin = user?.role === 'admin'
@@ -26,7 +27,8 @@ function MemberDetail() {
       setMember(foundMember)
       setTempPermissions({
         canCreateAnnouncement: foundMember.canCreateAnnouncement || false,
-        canCreatePlan: foundMember.canCreatePlan || false
+        canCreatePlan: foundMember.canCreatePlan || false,
+        canViewAllAnnouncements: foundMember.canViewAllAnnouncements || false
       })
     }
     setLoading(false)
@@ -43,6 +45,7 @@ function MemberDetail() {
   const handleSavePermissions = () => {
     updateMemberPermission(parseInt(id), 'canCreateAnnouncement', tempPermissions.canCreateAnnouncement)
     updateMemberPermission(parseInt(id), 'canCreatePlan', tempPermissions.canCreatePlan)
+    updateMemberPermission(parseInt(id), 'canViewAllAnnouncements', tempPermissions.canViewAllAnnouncements)
     setHasChanges(false)
     // Refresh member data
     const allMembers = getAllMembers()
@@ -185,6 +188,27 @@ function MemberDetail() {
                   </button>
                 </div>
 
+                {/* Can View All Announcements */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Bell size={20} className="text-gray-400" />
+                    <div>
+                      <p className="font-medium text-gray-800">View All Announcements</p>
+                      <p className="text-sm text-gray-500">Allow viewing private announcements (limited can see vs anyone can see)</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handlePermissionChange('canViewAllAnnouncements')}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${
+                      tempPermissions.canViewAllAnnouncements ? 'bg-red-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      tempPermissions.canViewAllAnnouncements ? 'translate-x-7' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+
                 {/* Save Button */}
                 {hasChanges && (
                   <button
@@ -226,6 +250,16 @@ function MemberDetail() {
                   )}
                   <span className={member.canCreatePlan ? 'text-green-700' : 'text-gray-500'}>
                     Can Create Plans
+                  </span>
+                </div>
+                <div className={`flex items-center gap-3 p-3 rounded-lg ${member.canViewAllAnnouncements ? 'bg-green-50' : 'bg-gray-50'}`}>
+                  {member.canViewAllAnnouncements ? (
+                    <Check size={18} className="text-green-600" />
+                  ) : (
+                    <X size={18} className="text-gray-400" />
+                  )}
+                  <span className={member.canViewAllAnnouncements ? 'text-green-700' : 'text-gray-500'}>
+                    Can View All Announcements
                   </span>
                 </div>
               </div>
